@@ -1,0 +1,14 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="row">
+
+    <div class="hero-unit">
+            <h1>{{ album }} <small>Viewing Album</small></h1>
+            <p><b>Description:</b> {{ description }}</p>
+            <p>This album has {{ picture_count }} pictures, last updated on {{ last_updated }}</p>
+	</div>
+          
+</div>
+
+{% endblock %}

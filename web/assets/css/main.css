@@ -1,0 +1,266 @@
+*:focus{
+	
+	outline: none;
+}
+
+/* ==========================================================================
+   Custom Font's
+   ========================================================================== */
+   
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: italic;
+  font-weight: normal;
+  src: local('Ubuntu Italic'), local('Ubuntu-Italic'), url('https://themes.googleusercontent.com/static/fonts/ubuntu/v3/kbP_6ONYVgE-bLa9ZRbvvvesZW2xOQ-xsNqO47m55DA.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: bold;
+  src: local('Ubuntu Bold'), local('Ubuntu-Bold'), url('https://themes.googleusercontent.com/static/fonts/ubuntu/v3/0ihfXUL2emPh0ROJezvraD8E0i7KZn-EPnyo3HZu7kw.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: italic;
+  font-weight: bold;
+  src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'), url('https://themes.googleusercontent.com/static/fonts/ubuntu/v3/OMD20Sg9RTs7sUORCEN-7YbN6UDyHWBl620a-IRfuBk.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Ubuntu'), url('https://themes.googleusercontent.com/static/fonts/ubuntu/v3/_xyN3apAT_yRRDeqB3sPRg.woff') format('woff');
+}
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
+body{
+	font-family: "Ubuntu";	
+}
+
+#countdown{
+	font-size:15pt;
+	margin-left:36px;
+	
+}
+.top-margin{
+	margin-top:64px;
+}
+.no-decoration{
+	text-decoration:none;
+	list-style:none;	
+}
+
+ul{
+	margin:0px;
+	padding:0px;	
+}
+
+.paddingbottom10 li, .paddingbottom10 span, .paddingbottom10 div {
+	margin:0px;
+	margin-bottom:10px;	
+}
+
+.center{
+	margin:0px auto;
+}
+
+
+/* ==========================================================================
+   Indicators
+   ========================================================================== */
+
+.alarm{
+	width:26px !important;
+	height:20px !important;
+	display:inline-block;
+}
+
+.alarm.green{
+	background:url('/assets/img/indicators.png') 0px 0px;
+}
+
+.alarm.orange{
+	background:url('/assets/img/indicators.png') 0px -21px;
+}
+
+.alarm.red{
+	background:url('/assets/img/indicators.png') 0px -42px;
+}
+
+.alarm.blue{
+	background:url('/assets/img/indicators.png') 0px -63px;
+}
+
+.alarm.purple{
+	background:url('/assets/img/indicators.png') 0px -84px;
+}
+
+.alarm.pink{
+	background:url('/assets/img/indicators.png') 0px -105px;
+}
+
+
+.tipsy { font-size: 11px; position: absolute; padding: 5px; z-index: 100000; }
+.tipsy-inner { background-color: #000; color: #FFF; max-width: 200px; padding: 9px 11px 8px 11px; text-align: center; }
+
+/* Rounded corners */
+.tipsy-inner { border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+
+.tipsy-arrow { position: absolute; width: 0; height: 0; line-height: 0; border: 5px dashed #000; }
+
+/* Rules to colour arrows */
+.tipsy-arrow-n { border-bottom-color: #000; }
+.tipsy-arrow-s { border-top-color: #000; }
+.tipsy-arrow-e { border-left-color: #000; }
+.tipsy-arrow-w { border-right-color: #000; }
+
+.tipsy-n .tipsy-arrow { top: 0px; left: 50%; margin-left: -5px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent; }
+.tipsy-nw .tipsy-arrow { top: 0; left: 10px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent;}
+.tipsy-ne .tipsy-arrow { top: 0; right: 10px; border-bottom-style: solid; border-top: none;  border-left-color: transparent; border-right-color: transparent;}
+.tipsy-s .tipsy-arrow { bottom: 0; left: 50%; margin-left: -5px; border-top-style: solid; border-bottom: none;  border-left-color: transparent; border-right-color: transparent; }
+.tipsy-sw .tipsy-arrow { bottom: 0; left: 10px; border-top-style: solid; border-bottom: none;  border-left-color: transparent; border-right-color: transparent; }
+.tipsy-se .tipsy-arrow { bottom: 0; right: 10px; border-top-style: solid; border-bottom: none; border-left-color: transparent; border-right-color: transparent; }
+.tipsy-e .tipsy-arrow { right: 0; top: 50%; margin-top: -5px; border-left-style: solid; border-right: none; border-top-color: transparent; border-bottom-color: transparent; }
+.tipsy-w .tipsy-arrow { left: 0; top: 50%; margin-top: -5px; border-right-style: solid; border-left: none; border-top-color: transparent; border-bottom-color: transparent; }
+
+
+.circle-stats {text-align: center; margin-top:-5px; position: relative;}
+.circular-item {position: relative; width:82px; height: 82px;margin-right:20px; margin-bottom: 10px; display: inline-block;}
+.circular-item .icon {font-size: 20px; position: absolute; top:48%; left:50%; margin-top: -18px; margin-left: -10px;}
+.circular-item input {
+	cursor: default;
+	box-shadow: none;
+	border:none;
+	height: auto;
+	position: absolute;
+	top:15px;
+	border-color: rgba(24, 24, 24, 0.8);
+}
+.circular-item input:focus {
+	outline: 0;
+	outline: thin dotted 0;
+	/* IE6-9 */
+	   -webkit-box-shadow: none;
+		  -moz-box-shadow: none;
+			 box-shadow: none;
+}
+
+.circular-progress-item {position: relative; width:82px; height: 82px;margin-right:20px; margin-bottom: 10px; display: inline-block;}
+.circular-progress-item input {
+	cursor: default;
+	box-shadow: none;
+	border:none;
+	height: auto;
+	position: absolute;
+	top:0px;
+	border-color: rgba(24, 24, 24, 0.8);
+}
+.circular-progress-item input:focus {
+	outline: 0;
+	outline: thin dotted 0;
+	/* IE6-9 */
+   -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+         box-shadow: none;
+}
+
+/*circular porgress bars*/
+.jCProgress {
+     position: absolute;
+     z-index: 999;
+     /* margin-top:-15px; /* offset from the center */
+}
+
+.jCProgress > div.percent {
+     font-size: 16px;
+     text-shadow: 0px 0px 1px #1f1f1f;
+     position:absolute;
+     left:50%;
+     top:50%;
+     margin-left:-20px;
+     text-align: center;
+     width:40px;
+     margin-top:2px;
+}
+div.percent:before{
+	content:"%";
+	width: 10px;
+}
+
+
+
+.clock {
+    width:535px;
+    margin:0 auto;
+}
+
+.clock_days {
+    float:left;
+    width:122px;
+    margin-right: 15px;
+    position: relative;
+}
+.clock_hours {
+    float:left;
+    width:122px;
+    margin-right: 15px;
+    position: relative;
+}
+.clock_minutes {
+    float:left;
+    width:122px;
+    margin-right: 15px;
+    position: relative;
+}
+.clock_seconds {
+    float:left;
+    width:122px;
+    position: relative;
+}
+
+.bgLayer {
+    background-image:url("../img/clock_bg.png");
+    width:122px;
+    height:122px;
+    background-repeat: no-repeat;
+}
+
+.val {
+    margin:0;
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    line-height: 122px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 35px;
+    color:#FFF;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #5295ac;
+    text-align: center;
+}
+
+.type_days,
+.type_hours,
+.type_minutes,
+.type_seconds {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color:#FFF;
+    background:#64b5d1;
+    padding:5px;
+    text-align: center;
+    margin:0 auto;
+    margin-top:10px;
+    display: table;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 1px #5295ac;
+}
+

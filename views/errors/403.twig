@@ -1,0 +1,13 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="span11">
+    <div class="hero-unit">
+            <h1>Permission Denied!</h1>
+            <p>The page you are attempting to access <code>{{ requested_page }}</code> required security permissions above those of which you have been granted.</p>
+            <p><a class="btn btn-primary btn-large go-back">Go Back &raquo;</a></p>
+	</div>
+          
+</div>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="span11">
+    <div class="hero-unit">
+            <h1>Uh, oh!</h1>
+            <p>The page you are looking for <code>{{ requested_page }}</code> was either intercepted by router gremlins or does not exists. You can retry your request, but it will probably fail.</p>
+            <p><a class="btn btn-primary btn-large go-back">Go Back &raquo;</a></p>
+	</div>
+          
+</div>
+
+{% endblock %}
