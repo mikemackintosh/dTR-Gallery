@@ -15,7 +15,11 @@ class DefaultWebViewController implements ControllerProviderInterface{
 				
 		$_meta = $app['config']->getSection("Gallery");
 		$_galleryDir = getcwd()."/gallery/";
-		
+
+		$app->init("imager", function() use ($app){
+			return new \dTRGallery\Provider\ImagerServiceProvider();
+		});
+				
 		// @TODO: Auto-generated method stub
 		$app->route("/", function(RequestManager $request) use ($app, $_meta, $_galleryDir){
 			
@@ -25,28 +29,51 @@ class DefaultWebViewController implements ControllerProviderInterface{
 				
 				if(!$dir->isDot() && $dir->getFilename() != "_thumbs"){
 					
+					$_albumMeta = new \stdClass;
+					
 					if(file_exists($_galleryDir.$dir->getFilename().'/meta.json')){
 						
 						$_albumMeta = json_decode(file_get_contents($_galleryDir.$dir->getFilename().'/meta.json'));
+
+					}
+					else{
+						
+						$_albumMeta->order = 0;
 						
 					}
 					
-					$images = scandir($_galleryDir.$dir->getFilename());
-					array_shift($images);
-					array_shift($images);
-					array_shift($images);
-					$image = array_shift($images);
-
-					$albums[$dir->getFilename()] = array("img" => "/get_thumb/{$dir->getFilename()}/{$image}", "size" => sizeof($images));
+					if(file_exists($_galleryDir.$dir->getFilename().'/link.jpg')){
 					
+						$image = "link.jpg";
+						$images = "0";
+					
+					}
+					else if(file_exists($_galleryDir.$dir->getFilename().'/thumb.jpg')){
+					
+						$image = "thumb.jpg";
+					
+					}
+					else{
+					
+						$images = scandir($_galleryDir.$dir->getFilename());
+						array_shift($images);
+						array_shift($images);
+						array_shift($images);
+						$image = array_shift($images);
+					}
+					
+					$albums[$dir->getFilename()] = array("img" => "/get_thumb/{$dir->getFilename()}/{$image}", "size" => sizeof($images));
 					
 				}
 				
 			}
 			
 			return $app['twig']->render("homepage.twig", array(
+				
 				"albums" => $albums,
+					
 			));
+			
 		})->bind("gallery_view");
 		
 		// @TODO: Auto-generated method stub
@@ -54,8 +81,27 @@ class DefaultWebViewController implements ControllerProviderInterface{
 			
 			$album_name = urldecode($album_name);
 			
+			foreach(new \DirectoryIterator($_galleryDir.$album_name) as $dir){
+			
+				if(!$dir->isDot() && $dir->getFilename() != "_thumbs" && $dir->getFilename() != "thumb.jpg"){
+						
+					$_albumMeta = new \stdClass;
+						
+					if(file_exists($_galleryDir.$dir->getFilename().'/meta.json')){
+			
+						$_albumMeta = json_decode(file_get_contents($_galleryDir.$dir->getFilename().'/meta.json'));
+			
+					}
+					
+					$pictures[$dir->getFilename()] = array("img" => "/get_thumb/{$dir->getFilename()}/{$image}", "size" => filesize());
+						
+				}
+			
+			}
+			
 			return $app['twig']->render("album_view.twig", array(
 				"album" => $album_name,
+				"pictures" => $pictures,
 			));
 			
 		})->regex("album_name", "[A-Za-z0-9-%_.]+")->bind("album_view");
@@ -74,214 +120,50 @@ class DefaultWebViewController implements ControllerProviderInterface{
 		
 		// @TODO: Auto-generated method stub
 		$app->route("/get_thumb/{album_name}/{picture}", function(RequestManager $request, $album_name, $picture) use ($app, $_meta, $_galleryDir){
+			
+			header( 'Content-Type: image/jpeg' );
+			$_webPath = "web/_thumbs/";
+			$path = urldecode("$_galleryDir$album_name/$picture");
+			$hash = sha1($path);
+			
+			if(!is_dir($_webPath.$album_name)){
 				
-			/*$img = new imgResize(urldecode($_galleryDir.$album_name."/$picture"));
-			$img->resizeImage(400, 400);
-			return $img->saveImage(null);
-			*/
+				mkdir($_webPath.$album_name);
+				
+			}
+			
+			if(!file_exists($_webPath . $album_name . $hash.".jpg")){
+							
+				$img = $app['imager']->load("$path");
+				$img->resizeToWidth(768);
+				$img->save($_webPath.$album_name.$hash."_768.jpg");
+
+				$img->resizeToWidth(512);
+				$img->save($_webPath.$album_name.$hash."_512.jpg");
+					
+				$img->resizeToWidth(256);
+				$img->save($_webPath.$album_name.$hash."_256.jpg");
+				
+			}
+			
+			return file_get_contents($_webPath.$album_name.$hash."_256.jpg");
+
 		})->regex("album_name", "[A-Za-z0-9-_%.]+")->regex("picture", "[A-Za-z0-9-_.]+")->bind("rawpicture");
 		
+		// @TODO: Auto-generated method stub
+		$app->route("/get_thumb/{album_name}/{picture}/{size}", function(RequestManager $request, $album_name, $picture, $size) use ($app, $_meta, $_galleryDir){
+			
+			header( 'Content-Type: image/jpeg' );
+			$_webPath = "web/_thumbs/";
+			$path = urldecode("$_galleryDir$album_name/$picture");
+			$hash = sha1($path);
+			
+			return file_get_contents($_webPath.$album_name.$hash."_". $size .".jpg");
+			
+		})->regex("album_name", "[A-Za-z0-9-_%.]+")->regex("picture", "[A-Za-z0-9-_.]+")->regex("size", "[0-9x._]+")->bind("rawpicture");
+		
 		return $app;
-	}
-	
-	public function function1(){
-
-	}
-
-	
-}
-
-class imgResize{
-	// *** Add to class variables  
-	private $imageResized;  
-	// *** Class variables
-	private $image;
-	private $width;
-	private $height;
-	
-	function __construct($fileName)
-	{
-		// *** Open up the file
-		$this->image = $this->openImage($fileName);
-		// *** Get width and height
-		$this->width  = imagesx($this->image);
-		$this->height = imagesy($this->image);
-	}
-	
-	private function openImage($file)
-	{
-		// *** Get extension
-		$extension = strtolower(strrchr($file, '.'));
-		switch($extension)
-		{
-			case '.jpg':
-			case '.jpeg':
-				$img = @imagecreatefromjpeg($file);
-				break;
-			case '.gif':
-				$img = @imagecreatefromgif($file);
-				break;
-			case '.png':
-				$img = @imagecreatefrompng($file);
-				break;
-			default:
-				$img = false;
-				break;
-		}
-		return $img;
-	}
-	
-	
-	public function resizeImage($newWidth, $newHeight, $option="auto")
-	{
-		// *** Get optimal width and height - based on $option
-		$optionArray = $this->getDimensions($newWidth, $newHeight, strtolower($option));
-		$optimalWidth  = $optionArray['optimalWidth'];
-		$optimalHeight = $optionArray['optimalHeight'];
 		
-		// *** Resample - create image canvas of x, y size
-		$this->imageResized = imagecreatetruecolor($optimalWidth, $optimalHeight);
-		imagecopyresampled($this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height);
-		
-		// *** if option is 'crop', then crop too
-		if ($option == 'crop') {
-			$this->crop($optimalWidth, $optimalHeight, $newWidth, $newHeight);
-		}
-	}
-
-	private function getDimensions($newWidth, $newHeight, $option)
-	{
-		switch ($option)
-		{
-			case 'exact':
-				$optimalWidth = $newWidth;
-				$optimalHeight= $newHeight;
-				break;
-			case 'portrait':
-				$optimalWidth = $this->getSizeByFixedHeight($newHeight);
-				$optimalHeight= $newHeight;
-				break;
-			case 'landscape':
-				$optimalWidth = $newWidth;
-				$optimalHeight= $this->getSizeByFixedWidth($newWidth);
-				break;
-			case 'auto':
-				$optionArray = $this->getSizeByAuto($newWidth, $newHeight);
-				$optimalWidth = $optionArray['optimalWidth'];
-				$optimalHeight = $optionArray['optimalHeight'];
-				break;
-			case 'crop':
-				$optionArray = $this->getOptimalCrop($newWidth, $newHeight);
-				$optimalWidth = $optionArray['optimalWidth'];
-				$optimalHeight = $optionArray['optimalHeight'];
-				break;
-		}
-		return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
 	}
 	
-	private function getSizeByFixedHeight($newHeight)
-	{
-		$ratio = $this->width / $this->height;
-		$newWidth = $newHeight * $ratio;
-		return $newWidth;
-	}
-	private function getSizeByFixedWidth($newWidth)
-	{
-		$ratio = $this->height / $this->width;
-		$newHeight = $newWidth * $ratio;
-		return $newHeight;
-	}
-	private function getSizeByAuto($newWidth, $newHeight)
-	{
-		if ($this->height < $this->width)
-			// *** Image to be resized is wider (landscape)
-		{
-			$optimalWidth = $newWidth;
-			$optimalHeight= $this->getSizeByFixedWidth($newWidth);
-		}
-		elseif ($this->height > $this->width)
-		// *** Image to be resized is taller (portrait)
-		{
-			$optimalWidth = $this->getSizeByFixedHeight($newHeight);
-			$optimalHeight= $newHeight;
-		}
-		else
-			// *** Image to be resizerd is a square
-		{
-			if ($newHeight < $newWidth) {
-				$optimalWidth = $newWidth;
-				$optimalHeight= $this->getSizeByFixedWidth($newWidth);
-			} else if ($newHeight > $newWidth) {
-				$optimalWidth = $this->getSizeByFixedHeight($newHeight);
-				$optimalHeight= $newHeight;
-			} else {
-				// *** Sqaure being resized to a square
-				$optimalWidth = $newWidth;
-				$optimalHeight= $newHeight;
-			}
-		}
-		return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
-	}
-	private function getOptimalCrop($newWidth, $newHeight)
-	{
-		$heightRatio = $this->height / $newHeight;
-		$widthRatio  = $this->width /  $newWidth;
-		if ($heightRatio < $widthRatio) {
-			$optimalRatio = $heightRatio;
-		} else {
-			$optimalRatio = $widthRatio;
-		}
-		$optimalHeight = $this->height / $optimalRatio;
-		$optimalWidth  = $this->width  / $optimalRatio;
-		return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
-	}
-	
-	private function crop($optimalWidth, $optimalHeight, $newWidth, $newHeight)
-	{
-		// *** Find center - this will be used for the crop
-		$cropStartX = ( $optimalWidth / 2) - ( $newWidth /2 );
-		$cropStartY = ( $optimalHeight/ 2) - ( $newHeight/2 );
-		$crop = $this->imageResized;
-		//imagedestroy($this->imageResized);
-		// *** Now crop from center to exact requested size
-		$this->imageResized = imagecreatetruecolor($newWidth , $newHeight);
-		imagecopyresampled($this->imageResized, $crop , 0, 0, $cropStartX, $cropStartY, $newWidth, $newHeight , $newWidth, $newHeight);
-	}
-	
-	public function saveImage($savePath = NULL, $imageQuality="100")
-	{
-		// *** Get extension
-		$extension = strrchr($savePath, '.');
-		$extension = strtolower($extension);
-		switch($extension)
-		{
-			case '.jpg':
-			case '.jpeg':
-				if (imagetypes() & IMG_JPG) {
-					imagejpeg($this->imageResized, $savePath, $imageQuality);
-				}
-				break;
-			case '.gif':
-				if (imagetypes() & IMG_GIF) {
-					imagegif($this->imageResized, $savePath);
-				}
-				break;
-			case '.png':
-				// *** Scale quality from 0-100 to 0-9
-				$scaleQuality = round(($imageQuality/100) * 9);
-				// *** Invert quality setting as 0 is best, not 9
-				$invertScaleQuality = 9 - $scaleQuality;
-				if (imagetypes() & IMG_PNG) {
-					imagepng($this->imageResized, $savePath, $invertScaleQuality);
-				}
-				break;
-				// ... etc
-			default:
-				// *** No extension - No save.
-				imagejpeg($this->imageResized, null, $imageQuality);
-				
-				break;
-		}
-		imagedestroy($this->imageResized);
-	}
 }

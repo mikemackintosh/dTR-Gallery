@@ -1,0 +1,82 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="hero-unit">
+    <h1>Administration</h1>
+    <p>The management platform allows you to manage your archives, thumbnails, albums and more!</p>
+</div>
+	
+<div class="row">
+	
+	<div class="span4">
+          <h2>Albums</h2>
+          <p>Manage, publish and revoke permissions for albums</p>
+		  <p class="btn-group">
+          	<a class="btn" href="{{ app.url_generator.generate("admin.albums") }}">
+	        	<i class="icon-th-large"></i>
+	        </a>
+	        <a class="btn" href="{{ app.url_generator.generate("admin.albums") }}">
+	          	Manage albums &raquo;
+	        </a>
+	      </p> 
+        </div>
+        
+        <div class="span4">
+          <h2>Upload</h2>
+          <p>Upload .APZ files to import into your gallery</p>
+       	  <p class="btn-group">
+          	<a class="btn" href="{{ app.url_generator.generate("admin.uploader") }}">
+	        	<i class="icon-arrow-up"></i>
+	        </a>
+	        <a class="btn" href="{{ app.url_generator.generate("admin.uploader") }}">
+	          	Go to uploader &raquo;
+	        </a>
+	      </p>
+	    </div>
+        
+        <div class="span4">
+          <h2>Comments</h2>
+          <p>Manage user posted comments</p>
+       	  <p class="btn-group">
+          	<a class="btn" href="{{ app.url_generator.generate("admin.comments") }}">
+	        	<i class="icon-tags"></i>
+	        </a>
+	        <a class="btn" href="{{ app.url_generator.generate("admin.comments") }}">
+	          	Manage comments &raquo;
+	        </a>
+	      </p>
+        </div>
+		
+</div>
+
+<div class="row">
+        
+        <div class="span4">
+          <h2>Site</h2>
+          <p>Manage site settings such as page name and title</p>
+          <p class="btn-group">
+          	<a class="btn" href="{{ app.url_generator.generate("admin.settings") }}">
+	        	<i class="icon-cog"></i>
+	        </a>
+	        <a class="btn" href="{{ app.url_generator.generate("admin.settings") }}">
+	          	Manage settings &raquo;
+	        </a>
+	      </p>
+        </div>
+        
+        <div class="span4">
+          <h2>Account</h2>
+          <p>Manage your password and email address</p>
+          <p class="btn-group">
+          	<a class="btn" href="{{ app.url_generator.generate("admin.account") }}">
+	        	<i class="icon-user"></i>
+	        </a>
+	        <a class="btn" href="{{ app.url_generator.generate("admin.account") }}">
+	          	Manage account &raquo;
+	        </a>
+	      </p>
+        </div>
+		
+</div>
+
+{% endblock %}

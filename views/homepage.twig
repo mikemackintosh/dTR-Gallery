@@ -1,24 +1,31 @@
 {% extends 'container.twig' %}
 {% block body %}
 
-<div class="row">
+<div class="span12">
 
     <div class="hero-unit">
             <h1>Hello there!</h1>
             <p>Welcome to the new Mackintosh Family website! There are {{ albums|length }} albums!</p>
 	</div>
 	
-	<div class="row span12">
-		{% for k,v in albums %}
-		<div class="thumbnail span2">
-	      <a href="/album/{{ k }}/">
-	      	<img src="{{ v.img| raw }}" alt="">
-	      	<h3>{{ k }}</h3>
-	      	<p>{{ v.size }} Picture(s)</p>
-	      </a>
-	    </div>
-			
-		{% endfor %}
+	<div class="row">
+	
+		<ul class="thumbnails">
+		
+			{% for k,v in albums %}
+	  		<li class="span2">
+				<div class="thumbnail">
+			      <a href="/album/{{ k }}/">
+			      	<img src="{{ v.img| raw }}" alt="">
+			      	<h4>{{ k }}</h4>
+			      	<p>{{ v.size }} Picture(s)</p>
+			      </a>
+			    </div>
+			</li>		
+			{% endfor %}
+		
+		</ul>
+		
 	</div>
           
 </div>

@@ -1,0 +1,27 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="hero-unit">
+    <h1>Uploader</h1>
+    <p>Use the form below to upload album packages</p>
+</div>
+	
+<div class="row">
+	<form method="post" action="{{ app.url_generator.generate("admin.upload") }}">
+		<div class="span10 offset1">
+	          <h2>Select your file</h2>
+	          <p>Use the button below to choose the file you wish to upload</p>
+				<span class="prettyFile">
+				    <input type="file" name="form[files][]" multiple="multiple">
+				    <div class="input-append">
+				       <input class="input-large" type="text">
+				       <a href="#" class="btn">Browse</a>
+				    </div>
+				</span>
+			  <p><button type="submit" class="btn-primary btn">Upload!</button></p>
+	    </div>
+    </form>
+		
+</div>
+
+{% endblock %}

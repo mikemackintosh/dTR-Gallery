@@ -8,6 +8,19 @@
             <p><b>Description:</b> {{ description }}</p>
             <p>This album has {{ picture_count }} pictures, last updated on {{ last_updated }}</p>
 	</div>
+	
+	<div class="row">
+		{% for k,v in pictures %}
+		<div class="span3">
+	      <a href="/album/{{ album }}/{{ k }}/">
+	      	<img src="{{ v.img| raw }}" alt="">
+	      	<h5>{{ k }}</h5>
+	      	<p>{{ v.size }} Picture(s)</p>
+	      </a>
+	    </div>
+			
+		{% endfor %}
+	</div>
           
 </div>
 

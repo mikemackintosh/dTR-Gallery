@@ -18,8 +18,19 @@ $app = include_once 'boot.php';
  *
  */
 $app->register(new Bakery\Provider\TwigServiceProvider( array(
-		'twig.path' => __DIR__.'/views',
+	'twig.path' => __DIR__.'/views',
 )));
+
+
+/**
+ * Initilizes the DB Pantry
+ *
+ * @Sets $app['db'];
+ *
+ */
+$app->init('db', function() use ($app){
+	return new Bakery\Provider\DatabasePantryProvider( $app );
+});
 
 
 /**
@@ -27,13 +38,43 @@ $app->register(new Bakery\Provider\TwigServiceProvider( array(
  * 
  */
 $app->mount("", new \dTRGallery\Controllers\DefaultWebViewController());
+$app->mount("/admin", new \dTRGallery\Controllers\DefaultAdminWebViewController());
+
+/**
+ * Security Definition
+ *
+ *
+ */
+$app->security(array(
+		"user" => "\\dTRGallery\\Manager\\User",
+		"login" => array(
+				"handler" => "/login",
+				"auth_type" => "DB", // LDAP, DB or LDAP+DB
+				"check_path" => "/login/validate"
+		),
+		"logout" => array(
+				"handler" => "/logout",
+		),
+		"admin_protected" => array(
+				"/admin/.*$",
+		),
+		"user_protected" => array(
+				"/.*$",
+		),
+));
+
+
+/**
+ * Register the URLGenerator class
+ *
+ * @Sets $app['url_generator']
+ *
+*/
+$app->register(new Bakery\Provider\URLGeneratorProvider( $app ));
 
 
 /**
  * Run the application
+ * 
  */
 $app->run();
-
-/**
- * END FILE;
- */

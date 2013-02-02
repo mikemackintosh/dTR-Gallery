@@ -12,7 +12,7 @@
 // set current working directory to below web root
 chdir(__DIR__);
 
-// Define some FW vars
+// Define some vars
 define("EXT", ".php");
 
 // Include composer autloader
