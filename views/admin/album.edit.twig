@@ -1,0 +1,98 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="hero-unit">
+    <h1 class="album_name">{{ album.name }}</h1>
+    <p>Managing the album <span class="album_name">{{ album.name }}</span></p>
+</div>
+	
+<div class="row">
+	<form method="post" action="{{ app.url_generator.generate('admin.album.save') }}">
+	
+		<div class="span3">
+	        <h2>Album Name</h2>
+	        <p><input type="input" name="name" field="album_name" value="{{ album.name }}"/></p>
+		</div>
+	    
+	    <div class="span4 offset1">
+	        <h2>Album Description</h2>
+	        <p><textarea class="span4" name="description" field="album_description">{{ album.description }}</textarea></p>
+		</div>
+		
+		<div class="span3 offset1">
+	        <h2>Permissions</h2>
+	        <p>
+	        	<h5>Visible:</h5>
+	        	<div class="btn-group" data-toggle-name="visible" data-toggle="buttons-radio">
+				  <button type="button" value="1" class="btn btn-primary">Yes</button>
+				  <button type="button" value="0" class="btn btn-primary">No</button>
+				</div>
+				<input type="hidden" name="visible" value="{{ album.visible }}" />
+			</p>
+			
+			<p>
+	        	<h5>Require Authentication:</h5>
+	        	<div class="btn-group" data-toggle-name="permissions" data-toggle="buttons-radio">
+				  <button type="button" value="1" class="btn btn-primary">Yes</button>
+				  <button type="button" value="0" class="btn btn-primary">No</button>
+				</div>
+				<input type="hidden" name="permissions" value="{{ album.permissions }}" />
+			</p>
+		</div>
+	
+	</form>
+    	
+</div>
+
+<script>
+$(document).ready(function(e){
+	
+	$('.sortable').sortable();
+	
+	$('div.btn-group[data-toggle-name]').each(function(){
+	    
+	    var group   = $(this);
+	    var name    = group.attr('data-toggle-name');	    
+	    var hidden  = $('input[name="' + name + '"]');
+	    
+	    $('button', group).each(function(){
+	      var button = $(this);
+	      button.live('click', function(){
+	          hidden.val($(this).val());
+	          
+	          $.post("{{ app.url_generator.generate('admin.album.update') }}", 
+	          	{ albumid: {{album.id}}, field: name, val: $(this).val() }, 
+	          	function(response){
+	          		console.log(response);
+	          	}, 
+	          	'json'
+	          );
+	      });
+	      
+		  if(button.val() == hidden.val()) {
+		     button.addClass('active');
+		  }
+		  
+	    });
+	    
+	});
+	
+	$('input, textarea').live('keyup', function(e){
+		var className = $(this).attr('field');
+		var inputName = $(this).attr('name');
+		
+		$("."+className).text($(this).val());
+		
+		$.post("{{ app.url_generator.generate('admin.album.update') }}", 
+	       { albumid: {{album.id}}, field: inputName, val: $(this).val() }, 
+	       function(response){
+	        	console.log(response);
+	       }, 
+	       'json'
+	    );
+	}); 
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="hero-unit">
+    <h1>Albums</h1>
+    <p>Manage albums and display orders</p>
+</div>
+	
+<div class="row">
+	
+	<div class="span4">
+		<form method="post" action="{{ app.url_generator.generate("admin.upload") }}">
+	          <h2>Create new album</h2>
+	          <p>To create a new album, enter the album name below</p>
+			  <p><input type="input" id="new_album_name" name="album" /></p>
+			  <p><button type="submit" class="btn-primary btn create">Create</button></p>
+		</form>
+	</div>
+    
+    <div class="span7 offset1">
+          <h2>Edit albums</h2>
+          <p>Below is a list of created albums</p>
+		  <p>
+		  	
+		  	{% if albums %}
+		  		<ul class="sortable">
+		  		{% for album in albums %}
+		  			<li>{{ album.name }} - <a href="{{ app.url_generator.generate('admin.album.edit', [ album.name ]) }}">Edit</a></li>
+		  		{% endfor %}
+		  		</ul>
+		  	{% else %}
+		  		There are no albums created yet
+		  	{% endif %}
+		  	
+		  </p>
+	</div>
+    	
+</div>
+
+<script>
+$(document).ready(function(e){
+	
+	$('.sortable').sortable();
+	
+	$('.create').live("click", function(e){
+		e.preventDefault();
+		
+		console.log("Create new");
+				
+		$.post("{{ app.url_generator.generate('admin.album.create') }}", 
+	       { val: $("#new_album_name").val() }, 
+	       function(response){
+	        	if(!response.successful){
+	        		alert("Name already exists");
+	        	}
+	        	else{
+	        		$('.sortable').append('<li>'+$("#new_album_name").val()+' - <a href="/admin/albums/'+$("#new_album_name").val()+'">Edit</a></li>');
+	        	}
+	       }, 
+	       'json'
+	    );
+		
+		
+	});
+
+});
+</script>
+
+{% endblock %}

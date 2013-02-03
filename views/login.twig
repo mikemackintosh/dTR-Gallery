@@ -1,0 +1,41 @@
+{% extends 'container.twig' %}
+{% block body %}
+
+<div class="hero-unit">
+	<h1>Authenticate, please!</h1>
+    <p>Please authenticate to access the management console.</p>			
+</div>
+
+<div class="row">
+	<div class="span6 offset4">
+				
+		{% if error != null %}
+    	<div class="alert alert-error">
+		  <strong>Error!</strong> {{ error }}
+		</div>
+		{% endif %}
+				
+		<form action="{{ login_validator }}" method="POST">
+			<input type="hidden" name="redirect_to" value="{{ redirect_to }}">
+			<fieldset>
+				<div class="clearfix">
+					<div class="input-prepend">
+					<span class="add-on"><i class="icon-user icon-white"></i></span>
+					<input type="text" name="username" placeholder="Username">
+				</div>
+		
+				<div class="clearfix">
+					<div class="input-prepend">
+						<span class="add-on"><i class="icon-lock icon-white"></i></span>
+						<input type="password" name="password" placeholder="Password">
+					</div>
+				</div>
+				
+				<button class="btn btn-primary" type="submit">Sign in</button>
+				
+			</fieldset>
+		</form>
+	</div>
+</div>
+			
+{% endblock %}
