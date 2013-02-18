@@ -33,14 +33,28 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 
 		// @TODO: Auto-generated method stub
 		$app->route("/albums/update", function( RequestManager $request, $response = array() ) use ( $app ){
-		
-			$app['db']->update("dtr_gallery.albums", array($request->post('field') ."=?"), array($request->post('val'),$request->post('albumid')), "id=?");
-				
+			print_r($request->requestAll());
+			if($request->posted('delete')){
+				echo "true";
+			}
+			else{
+				echo "false";
+			}
+			
+			die();
+			
+			if($request->post('delete') == 'delete'){
+				$app['db']->executeQuery("DELETE FROM dtr_gallery.albums WHERE id=?", array($request->post('albumid')));
+			}else{
+				$app['db']->update("dtr_gallery.albums", array($request->post('field') ."=?"), array($request->post('val'),$request->post('albumid')), "id=?");
+			}
+			
 			$response['successful'] = true;
 				
 			return json_encode($response);
 		
-		})->bind("admin.album.update");
+		})->method('POST')->bind("admin.album.update");
+		
 		// @TODO: Auto-generated method stub
 		$app->route("/albums/create", function( RequestManager $request, $response = array() ) use ( $app ){
 			$q = $app['db']->fetchAll("SELECT id FROM dtr_gallery.albums where name=?", array($request->post('val')));
@@ -48,14 +62,15 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 				$response['successful'] = false;
 			}
 			else{
-				$app['db']->insert("dtr_gallery.albums", array("name=?"), array($request->post('val')));
+			/*	$app['db']->insert("dtr_gallery.albums", array("name=?", "slug=?"), array($request->post('val'), b_filter("create_slug", $request->post('val'))));
 				$app['db']->update("dtr_gallery.albums", array("display_order=?"), array($app['db']->lastInsertId(),$app['db']->lastInsertId()), "id=?");
 				$response['successful'] = $app['db']->lastInsertId();
+				*/
 			}
 			
 			return json_encode($response);
 		
-		})->bind("admin.album.create");
+		})->method('POST')->bind("admin.album.create");
 		
 		// @TODO: Auto-generated method stub
 		$app->route("/albums/{album}", function(RequestManager $request, $album) use ( $app ){
@@ -84,11 +99,16 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 		 * Upload packages
 		 *
 		 */
-		$app->route("/uploader/start", function(RequestManager $request) use ( $app ){
+		$app->route("/upload/start", function(RequestManager $request) use ( $app ){
 		
-			print_r($request->requestAll());
+			$album = $request->post('album');
+			foreach($_FILES['images']['name'] as $key => $file){
 				
-		})->bind("admin.upload");
+				print_r($file);
+				
+			}
+				
+		})->method('POST')->bind("admin.upload");
 		
 		
 		/**

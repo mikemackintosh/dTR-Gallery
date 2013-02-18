@@ -9,7 +9,7 @@
 <div class="row">
 	
 	<div class="span4">
-		<form method="post" action="{{ app.url_generator.generate("admin.upload") }}">
+		<form>
 	          <h2>Create new album</h2>
 	          <p>To create a new album, enter the album name below</p>
 			  <p><input type="input" id="new_album_name" name="album" /></p>
@@ -25,7 +25,7 @@
 		  	{% if albums %}
 		  		<ul class="sortable">
 		  		{% for album in albums %}
-		  			<li>{{ album.name }} - <a href="{{ app.url_generator.generate('admin.album.edit', [ album.name ]) }}">Edit</a></li>
+		  			<li albumid="{{ album.id }}"  class="">{{ album.name }} - <a href="{{ app.url_generator.generate('admin.album.edit', [ album.name ]) }}">Edit</a></li>
 		  		{% endfor %}
 		  		</ul>
 		  	{% else %}
@@ -54,13 +54,31 @@ $(document).ready(function(e){
 	        		alert("Name already exists");
 	        	}
 	        	else{
-	        		$('.sortable').append('<li>'+$("#new_album_name").val()+' - <a href="/admin/albums/'+$("#new_album_name").val()+'">Edit</a></li>');
+	        		$('.sortable').append('<li albumid="'+response.successful+'" class="">'+$("#new_album_name").val()+' - <a href="/admin/albums/'+$("#new_album_name").val()+'">Edit</a></li>');
 	        	}
 	       }, 
 	       'json'
 	    );
 		
 		
+	});
+	
+	$('.sortable').sortable().bind('sortupdate', function() {
+    //Triggered when the user stopped sorting and the DOM position has changed.
+    	console.log("Update");
+    	$.each($('.sortable').find("[albumid]"), function(k,v){
+    		var order = k;
+    		var albumid = $(v).attr('albumid');
+    		
+    		$.post("{{ app.url_generator.generate('admin.album.update') }}", 
+	       { field: "display_order", val: order, albumid: albumid }, 
+	       function(response){
+
+	       }, 
+	       'json'
+	    );
+    	});
+    	
 	});
 
 });

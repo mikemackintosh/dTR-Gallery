@@ -5,18 +5,27 @@
     <h1 class="album_name">{{ album.name }}</h1>
     <p>Managing the album <span class="album_name">{{ album.name }}</span></p>
 </div>
-	
+
+<form method="post" action="{{ app.url_generator.generate('admin.album.update') }}" enctype="multipart/form-data">
 <div class="row">
-	<form method="post" action="{{ app.url_generator.generate('admin.album.save') }}">
 	
-		<div class="span3">
+		<div class="span4">
 	        <h2>Album Name</h2>
-	        <p><input type="input" name="name" field="album_name" value="{{ album.name }}"/></p>
+	        <p><input type="text" name="name" field="album_name" value="{{ album.name }}"/></p>
+	        <p>Slug: <i>{{ album.slug }}</i></p>
+	        
+	        <h2>Album Description</h2>
+	        <p><textarea class="span3" name="description" field="album_description">{{ album.description }}</textarea></p>
 		</div>
 	    
-	    <div class="span4 offset1">
-	        <h2>Album Description</h2>
-	        <p><textarea class="span4" name="description" field="album_description">{{ album.description }}</textarea></p>
+	    <div class="span4">
+	        <h2>Feature Thumbnail</h2>
+	        <p>
+	        	<a href="#featureImage" data-toggle="modal" class="thumbnail">
+			      <img data-src="holder.js/300x200" alt="">
+			      <input type="hidden" name="feature" value="{{ album.feature }}" />
+			    </a>
+	        </p>
 		</div>
 		
 		<div class="span3 offset1">
@@ -38,16 +47,73 @@
 				</div>
 				<input type="hidden" name="permissions" value="{{ album.permissions }}" />
 			</p>
+			
+			<p>
+	        	<h5>Upload Images:</h5>
+	        	<span class="btn btn-success fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <span>Add files</span>
+                	<input type="file" id="files" multiple />
+                </span>
+				<input type="button" class="btn btn-primary" id="upload" value="Upload" />
+				<progress></progress>
+                
 		</div>
 	
-	</form>
+</div>
+<div class="row">
+	
+	<div class="span12">
+		<button name="submit" type="submit" class="btn btn-primary">Save</button>
+		<button name="delete" type="button" class="btn btn-danger" data-target="#confirm-modal" data-toggle="modal">Delete</button>
+	</div>
+	
+</div>
+
+<div id="confirm-modal" class="modal hide fade">
+    <div class="modal-header">
+      <a href="#" class="close" data-dismiss="modal">&times;</a>
+      <h3>Delete Album</h3>
+    </div>
+    <div class="modal-body">
+      <p>You are about to delete the album "<span class="album_name">{{ album.name }}</span>".</p>
+      <p>Do you want to proceed?</p>
+    </div>
+    <div class="modal-footer">
+	  <button name="delete" type="submit" class="btn btn-danger confirm-delete">Delete</button>
+      <a href="javascript:$('#confirm-modal').modal('hide')" class="btn secondary">No</a>
+    </div>
+</div>
+
+</form>
     	
+<div id="featureImage" class="modal hide fade">
+    <div class="modal-header">
+      <a href="#" class="close" data-dismiss="modal">&times;</a>
+      <h3>Select a feature image</h3>
+    </div>
+    <div class="modal-body">
+ 		{% if album.images %}
+ 			{% for img in album.images %}
+ 				
+ 			{% endfor %}
+ 			<img src="">
+ 		{% else %}
+ 			No images to display
+ 		{% endif %}
+    </div>
+    <div class="modal-footer">
+	  <button type="button" class="btn btn-success">Save</button>
+      <a href="javascript:$('#featureImage').modal('hide')" class="btn secondary">Close</a>
+    </div>
 </div>
 
 <script>
 $(document).ready(function(e){
 	
 	$('.sortable').sortable();
+
+	$('progress').hide();
 	
 	$('div.btn-group[data-toggle-name]').each(function(){
 	    
@@ -57,16 +123,16 @@ $(document).ready(function(e){
 	    
 	    $('button', group).each(function(){
 	      var button = $(this);
-	      button.live('click', function(){
+	      button.on('click', function(){
 	          hidden.val($(this).val());
 	          
-	          $.post("{{ app.url_generator.generate('admin.album.update') }}", 
+	          /*$.post("{{ app.url_generator.generate('admin.album.update') }}", 
 	          	{ albumid: {{album.id}}, field: name, val: $(this).val() }, 
 	          	function(response){
 	          		console.log(response);
 	          	}, 
 	          	'json'
-	          );
+	          );*/
 	      });
 	      
 		  if(button.val() == hidden.val()) {
@@ -77,20 +143,69 @@ $(document).ready(function(e){
 	    
 	});
 	
-	$('input, textarea').live('keyup', function(e){
+	$('input, textarea').on('keyup', function(e){
 		var className = $(this).attr('field');
 		var inputName = $(this).attr('name');
 		
 		$("."+className).text($(this).val());
 		
-		$.post("{{ app.url_generator.generate('admin.album.update') }}", 
+		/*$.post("{{ app.url_generator.generate('admin.album.update') }}", 
 	       { albumid: {{album.id}}, field: inputName, val: $(this).val() }, 
 	       function(response){
 	        	console.log(response);
 	       }, 
 	       'json'
-	    );
+	    );*/
 	}); 
+	
+	$("#files").change(function() {
+	  $(this).parent().find('span').text($(this).prop("files").length + " files");
+	});
+
+	$('#upload').click(function(){
+	
+		$('progress').show();
+	
+	    var formData = new FormData();
+	    
+	    $.each($('#files').prop("files"), function(k,v){
+	    	formData.append("images[]", v);
+	    });
+	    
+	    formData.append('album', $('input[name="name"]').val());
+	    
+	    $.ajax({
+	        url: '{{ app.url_generator.generate('admin.upload') }}',  //server script to process data
+	        type: 'POST',
+	        xhr: function() {  // custom xhr
+	            myXhr = $.ajaxSettings.xhr();
+	            if(myXhr.upload){ // check if upload property exists
+	                myXhr.upload.addEventListener('progress',function(e){
+					    if(e.lengthComputable){
+					        $('progress').attr({value:e.loaded,max:e.total});
+					    }
+				    }, false); // for handling the progress of the upload
+	            }
+	            return myXhr;
+	        },
+	        /*//Ajax events
+	        beforeSend: beforeSendHandler,
+	        success: function(response){
+	        	
+	        	$('#files').parent().find('span').text('Add files');
+	        	$('progress').hide();
+	        	
+	        },
+	        error: errorHandler,
+	        */
+	        // Form data
+	        data: formData,
+	        //Options to tell JQuery not to process data or worry about content-type
+	        cache: false,
+	        contentType: false,
+	        processData: false
+	    });
+	});
 
 });
 </script>
