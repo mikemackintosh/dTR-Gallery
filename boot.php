@@ -15,6 +15,11 @@ chdir(__DIR__);
 // Define some vars
 define("EXT", ".php");
 
+// Define APP_PATH
+define('APP_PATH', getcwd().'/');
+define('WEB_PATH', getcwd().'/web/');
+define('GALLERY_PATH', getcwd().'/web/_thumbs/');
+
 // Include composer autloader
 include_once 'vendor/autoload.php';
 

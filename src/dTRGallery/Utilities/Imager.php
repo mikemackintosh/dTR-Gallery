@@ -28,42 +28,55 @@ class Imager {
       
       return $this;
    }
-   function save($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) {
+   function save($filename, $compression=75, $permissions=null) {
  
-      if( $image_type == IMAGETYPE_JPEG ) {
+      if( $this->image_type == IMAGETYPE_JPEG ) {
+      	
          \imagejpeg($this->image,$filename,$compression);
-      } elseif( $image_type == IMAGETYPE_GIF ) {
+         
+      } elseif( $this->image_type == IMAGETYPE_GIF ) {
  
          \imagegif($this->image,$filename);
-      } elseif( $image_type == IMAGETYPE_PNG ) {
+         
+      } elseif( $this->image_type == IMAGETYPE_PNG ) {
  
          \imagepng($this->image,$filename);
+         
       }
+      
       if( $permissions != null) {
  
          chmod($filename,$permissions);
       }
+      
    }
-   function output($image_type=IMAGETYPE_JPEG) {
+   
+   function output() {
  
-      if( $image_type == IMAGETYPE_JPEG ) {
-         imagejpeg($this->image);
-      } elseif( $image_type == IMAGETYPE_GIF ) {
+      if( $this->image_type == IMAGETYPE_JPEG ) {
+         
+      	imagejpeg($this->image);
+      } elseif( $this->image_type == IMAGETYPE_GIF ) {
  
          imagegif($this->image);
-      } elseif( $image_type == IMAGETYPE_PNG ) {
+      } elseif( $this->image_type == IMAGETYPE_PNG ) {
  
          imagepng($this->image);
       }
    }
+   
+   
+   
    function getWidth() {
  
       return imagesx($this->image);
    }
+   
    function getHeight() {
  
       return imagesy($this->image);
    }
+   
    function resizeToHeight($height) {
  
       $ratio = $height / $this->getHeight();

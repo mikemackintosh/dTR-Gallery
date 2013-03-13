@@ -12,7 +12,6 @@
 namespace dTRGallery\Manager;
 
 use \Bakery\Application;
-use \Bakery\Provider\ArrayAccessProvider;
 use \Bakery\Provider\LdapPantryProvider;
 use \dTRGallery\Manager\UserEntity;
 
@@ -20,7 +19,7 @@ use \dTRGallery\Manager\UserEntity;
  * @author mackmi4
  *
  */
-class User extends ArrayAccessProvider implements \Bakery\Interfaces\User, \ArrayAccess {
+class User extends \Bakery\Provider\ArrayAccessProvider implements \Bakery\Interfaces\User, \ArrayAccess {
 	
 	private 
 		$roles = array(

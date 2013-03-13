@@ -25,7 +25,7 @@ class DefaultWebViewController implements ControllerProviderInterface{
 			
 			$albums = array();
 			
-			foreach(new \DirectoryIterator($_galleryDir) as $dir){
+			/*foreach(new \DirectoryIterator($_galleryDir) as $dir){
 				
 				if(!$dir->isDot() && $dir->getFilename() != "_thumbs"){
 					
@@ -66,7 +66,7 @@ class DefaultWebViewController implements ControllerProviderInterface{
 					
 				}
 				
-			}
+			}*/
 			
 			return $app['twig']->render("homepage.twig", array(
 				
@@ -81,7 +81,7 @@ class DefaultWebViewController implements ControllerProviderInterface{
 			
 			$album_name = urldecode($album_name);
 			
-			foreach(new \DirectoryIterator($_galleryDir.$album_name) as $dir){
+			/*foreach(new \DirectoryIterator($_galleryDir.$album_name) as $dir){
 			
 				if(!$dir->isDot() && $dir->getFilename() != "_thumbs" && $dir->getFilename() != "thumb.jpg"){
 						
@@ -98,7 +98,7 @@ class DefaultWebViewController implements ControllerProviderInterface{
 				}
 			
 			}
-			
+			*/
 			return $app['twig']->render("album_view.twig", array(
 				"album" => $album_name,
 				"pictures" => $pictures,
@@ -122,7 +122,7 @@ class DefaultWebViewController implements ControllerProviderInterface{
 		$app->route("/get_thumb/{album_name}/{picture}", function(RequestManager $request, $album_name, $picture) use ($app, $_meta, $_galleryDir){
 			
 			header( 'Content-Type: image/jpeg' );
-			$_webPath = "web/_thumbs/";
+			/*$_webPath = "web/_thumbs/";
 			$path = urldecode("$_galleryDir$album_name/$picture");
 			$hash = sha1($path);
 			
@@ -146,9 +146,11 @@ class DefaultWebViewController implements ControllerProviderInterface{
 				
 			}
 			
-			return file_get_contents($_webPath.$album_name.$hash."_256.jpg");
+			return file_get_contents($_webPath.$album_name.$hash."_256.jpg");*/
 
-		})->regex("album_name", "[A-Za-z0-9-_%.]+")->regex("picture", "[A-Za-z0-9-_.]+")->bind("rawpicture");
+		})->regex("album_name", "[A-Za-z0-9-_%.]+")
+		  ->regex("picture", "[A-Za-z0-9-_.]+")
+		  ->bind("rawpicture");
 		
 		// @TODO: Auto-generated method stub
 		$app->route("/get_thumb/{album_name}/{picture}/{size}", function(RequestManager $request, $album_name, $picture, $size) use ($app, $_meta, $_galleryDir){
@@ -160,7 +162,10 @@ class DefaultWebViewController implements ControllerProviderInterface{
 			
 			return file_get_contents($_webPath.$album_name.$hash."_". $size .".jpg");
 			
-		})->regex("album_name", "[A-Za-z0-9-_%.]+")->regex("picture", "[A-Za-z0-9-_.]+")->regex("size", "[0-9x._]+")->bind("rawpicture");
+		})->regex("album_name", "[A-Za-z0-9-_%.]+")
+		  ->regex("picture", "[A-Za-z0-9-_.]+")
+		  ->regex("size", "[0-9x._]+")
+		  ->bind("getsizedpic");
 		
 		return $app;
 		

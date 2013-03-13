@@ -20,6 +20,7 @@
         
         <!-- iFrame Transport Support -->
         <script>document.write('<script src="/assets/js/jquery.iframe-transport.js"><\/script>')</script>
+        <script>document.write('<script src="/assets/js/vendor/jquery.blImageCenter.js"><\/script>')</script>
  		
  		<!-- Added CORS support for non xdr-transport -->
  		<!--[if gte IE 8]><script src="/assets/js/cors/jquery.xdr-transport.js"></script><![endif]-->
@@ -35,6 +36,9 @@
 				$(".gallery").colorbox({rel:'group2', transition:"fade"});
 				
 				//$( ".thumbnail img" ).imgr({ height: 260, width: 180 });
+				
+				$('img.center').centerImage();
+				
 				
 			});
 		</script>    

@@ -6,9 +6,31 @@
     <p>Managing the album <span class="album_name">{{ album.name }}</span></p>
 </div>
 
+<!-- Breadcrumbs -->
+<div class="row-fluid">
+	<ul class="breadcrumb">
+  		<li><a href="{{ app.url_generator.generate('admin.homepage') }}">Home</a> <span class="divider">/</span></li>
+	  	<li><a href="{{ app.url_generator.generate('admin.albums') }}">Albums</a> <span class="divider">/</span></li>
+	  	<li class="active">{{ album.name }}</li>
+	</ul>
+</div>
+<!-- /Breadcrumbs -->
+
 <form method="post" action="{{ app.url_generator.generate('admin.album.update') }}" enctype="multipart/form-data">
 <div class="row">
-	
+	{{ response }}
+		{% if response == 'success' %}
+		<div class="alert alert-success">
+  			<a href="#" class="close" data-dismiss="alert" >&times;</a>
+  			<strong>Good Job!</strong> You have update the album
+		</div>
+		{% elseif response == 'fail' %}
+		<div class="alert alert-error">
+  			<a href="#" class="close" data-dismiss="alert" >&times;</a>
+  			<strong>Warning!</strong> {{ error }}
+		</div>
+		{% endif %}
+			
 		<div class="span4">
 	        <h2>Album Name</h2>
 	        <p><input type="text" name="name" field="album_name" value="{{ album.name }}"/></p>
@@ -16,14 +38,18 @@
 	        
 	        <h2>Album Description</h2>
 	        <p><textarea class="span3" name="description" field="album_description">{{ album.description }}</textarea></p>
+			
+			<input type="hidden" name="id" value="{{ album.id }}" />
+			<input type="hidden" name="slug" value="{{ album.slug }}" />
+			
 		</div>
 	    
 	    <div class="span4">
 	        <h2>Feature Thumbnail</h2>
 	        <p>
 	        	<a href="#featureImage" data-toggle="modal" class="thumbnail">
-			      <img data-src="holder.js/300x200" alt="">
-			      <input type="hidden" name="feature" value="{{ album.feature }}" />
+			      <img id="featured" src="{{ album.feature|default('holder.js/300x200') }}" alt="">
+			      <input type="hidden" class="feature-image" name="feature" value="{{ album.feature }}" />
 			    </a>
 	        </p>
 		</div>
@@ -61,14 +87,18 @@
 		</div>
 	
 </div>
+
+<!-- Control Buttons -->
 <div class="row">
 	
 	<div class="span12">
 		<button name="submit" type="submit" class="btn btn-primary">Save</button>
+		<button name="create_new" type="button" class="btn btn-success">Create New Album</button>
 		<button name="delete" type="button" class="btn btn-danger" data-target="#confirm-modal" data-toggle="modal">Delete</button>
 	</div>
 	
 </div>
+<!-- /Control Buttons -->
 
 <div id="confirm-modal" class="modal hide fade">
     <div class="modal-header">
@@ -92,14 +122,14 @@
       <a href="#" class="close" data-dismiss="modal">&times;</a>
       <h3>Select a feature image</h3>
     </div>
-    <div class="modal-body">
+    <div class="modal-body featured-image-list">
  		{% if album.images %}
  			{% for img in album.images %}
  				
  			{% endfor %}
  			<img src="">
  		{% else %}
- 			No images to display
+ 			<p>No images to display</p>
  		{% endif %}
     </div>
     <div class="modal-footer">
@@ -110,6 +140,11 @@
 
 <script>
 $(document).ready(function(e){
+	
+	
+	$('button[name="create_new"]').click(function(e){
+		window.location = '{{ app.url_generator.generate('admin.albums') }}';
+	});
 	
 	$('.sortable').sortable();
 
@@ -143,7 +178,7 @@ $(document).ready(function(e){
 	    
 	});
 	
-	$('input, textarea').on('keyup', function(e){
+	/*$('input, textarea').on('keyup', function(e){
 		var className = $(this).attr('field');
 		var inputName = $(this).attr('name');
 		
@@ -155,8 +190,8 @@ $(document).ready(function(e){
 	        	console.log(response);
 	       }, 
 	       'json'
-	    );*/
-	}); 
+	    );*//*
+	}); */
 	
 	$("#files").change(function() {
 	  $(this).parent().find('span').text($(this).prop("files").length + " files");
@@ -188,16 +223,39 @@ $(document).ready(function(e){
 	            }
 	            return myXhr;
 	        },
-	        /*//Ajax events
-	        beforeSend: beforeSendHandler,
+	        //Ajax events
+	       // beforeSend: beforeSendHandler,
 	        success: function(response){
 	        	
+	        	var res = jQuery.parseJSON(response);
+	        	
 	        	$('#files').parent().find('span').text('Add files');
+	        	
 	        	$('progress').hide();
 	        	
+	        	if($('.featured-image-list p').length > 0){
+	        		$('.featured-image-list p').remove();
+	        	}
+	        	
+	        	$.each(res.imgs, function(k, v){
+	        	    $('.featured-image-list').append('<img src="/_thumbs/'+ res.album+'64/'+v+'" class="center thumbnail" />').css('cursor', 'pointer');
+	        	});
+	        		
+				$('.featured-image-list img').on('click', function(e){
+					
+					var $img = $(this).attr('src');
+					
+					$("#featured").attr('src', $img);
+					
+					$('input.feature-image').val($img);
+					console.log($('input.feature-image').val());
+					$('#featureImage').modal('hide');
+					
+				});
+	        	
 	        },
-	        error: errorHandler,
-	        */
+	        //error: errorHandler,
+	        
 	        // Form data
 	        data: formData,
 	        //Options to tell JQuery not to process data or worry about content-type
