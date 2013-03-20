@@ -16,6 +16,10 @@
 <div class="row">
 	
 	<div class="span4">
+		<div class="json_alert hidden alert">
+  			<a href="#" class="close" data-dismiss="alert" >&times;</a>
+  			<strong>Good Job!</strong> <span class="msg"></span>
+		</div>
 		{% if error|length > 1 %}
 		<div class="alert alert-error">
   			<a href="#" class="close" data-dismiss="alert" >&times;</a>
@@ -36,9 +40,14 @@
 		  <p>
 		  	
 		  	{% if albums %}
-		  		<ul class="sortable">
+		  		<ul class="sortable thumbnails">
 		  		{% for album in albums %}
-		  			<li albumid="{{ album.id }}"  class="">{{ album.name }} - <a href="{{ app.url_generator.generate('admin.album.edit', [ album.name ]) }}">Edit</a></li>
+	  				<li albumid="{{ album.id }}"  class="span2 thumbnail">
+		  					<a href="{{ app.url_generator.generate('admin.album.edit', [ album.name ]) }}">
+		  					<img src="{{ album.feature }}" style="width:100px;height:64px;"/>
+		  					<h4>{{ album.name }}</h4>
+		  					</a>
+	 				</li>
 		  		{% endfor %}
 		  		</ul>
 		  	{% else %}
@@ -77,20 +86,34 @@ $(document).ready(function(e){
 	});*/
 	
 	$('.sortable').sortable().bind('sortupdate', function() {
-    //Triggered when the user stopped sorting and the DOM position has changed.
-    	console.log("Update");
+    	
+    	var data = [];
+    	//Triggered when the user stopped sorting and the DOM position has changed.
     	$.each($('.sortable').find("[albumid]"), function(k,v){
-    		var order = k;
-    		var albumid = $(v).attr('albumid');
-    		
-    		$.post("{{ app.url_generator.generate('admin.album.update') }}", 
-	       		{ field: "display_order", val: order, albumid: albumid }, 
-	       		function(response){
 
-	      		}, 
-	       		'json'
-	    	);
+    		data[k] = $(v).attr('albumid'); 
+	    	
     	});
+    	
+    	console.log(data);
+    	
+    	// Send updated request to server    	
+    	$.post("{{ app.url_generator.generate('admin.album.update_display') }}", 
+	    	{ data: data }, 
+	    	function(response){
+	    	
+				if(response.status){
+					$('.json_alert').addClass('alert-success');
+				}
+				else{
+					$('.json_alert').addClass('alert-error');
+				}
+
+				$('.json_alert').removeClass('hidden').find('span').text(response.response);
+
+	    	}, 
+	    	'json'
+	    );
     	
 	});
 

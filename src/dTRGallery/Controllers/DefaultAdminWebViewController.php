@@ -28,8 +28,8 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 		// @TODO: Auto-generated method stub
 		$app->route("/albums", function(RequestManager $request) use ( $app ){
 			
-			$error = $_SESSION['error'];
-			$name = $_SESSION['name'];
+			$error = ($_SESSION['error'] ? $_SESSION['error'] : '');
+			$name = ($_SESSION['name'] ? $_SESSION['name'] : '');
 				
 			unset($_SESSION['error']);
 			unset($_SESSION['name']);
@@ -66,7 +66,7 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 				$values[] = $request->post('name');
 				$values[] = b_filter("create_slug", $request->post('name'));
 				$values[] = $request->post('description');
-				$values[] = $request->post('feature');
+				$values[] = str_replace("/64/", "/256/", $request->post('feature'));
 				$values[] = $request->post('permissions');
 				//$values[] = $request->post('display_order');
 				$values[] = $request->post('visible');
@@ -88,6 +88,34 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 		
 		})->method('POST')->bind("admin.album.update");
 		
+		$app->route("/albums/update_display_order", function( RequestManager $request, $response = array() ) use ( $app ){
+		
+			$order = $request->request('data');
+			
+			try{
+				if(sizeof($order) > 0){
+					foreach($order as $o => $album){
+						
+						$app['db']->executeQuery("UPDATE dtr_gallery.albums set display_order=$o WHERE id=$album");
+						
+					}
+					
+				}
+			}
+			catch(\Exception $e){
+				
+				$error = $e->getMessage();
+				
+			}
+			
+			if(empty($error)){
+				return json_encode(array('status' => true, 'response' => 'Display Order Updated!'));
+			}
+			
+			return json_encode(array('status' => false, 'response' => $error));
+			
+		})->method('POST')->bind("admin.album.update_display");
+				
 		// @TODO: Auto-generated method stub
 		$app->route("/albums/create", function( RequestManager $request, $response = array() ) use ( $app ){
 			
@@ -144,7 +172,10 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 			
 			$album = urldecode($album);
 			
-			$response = $_SESSION;
+			$response = array('response' => '', 'error' => '');
+			
+			//($_SESSION ? $_SESSION : );
+			
 			unset($_SESSION['response']);
 			unset($_SESSION['error']);
 			
@@ -154,8 +185,29 @@ class DefaultAdminWebViewController implements ControllerProviderInterface{
 				header("Location: ".$app['url_generator']->generate('admin.albums'));
 			}
 			
+			$webPath = "_thumbs/{$albums['slug']}/256/";
+			$fsPath = WEB_PATH . $webPath;
+				
+			$images = array();
+			
+			try{
+				$di = new \DirectoryIterator($fsPath);
+				foreach($di as $image){
+					if(!$image->isDir()){
+						$images[] =  $image->getFilename();
+					}
+				}
+			}
+			catch(\Exception $e){
+				$response['response'] = 'fail';
+				$response['error'] = $e->getMessage();
+			}
+			
+			$albums['image_path'] = $webPath;
+			
 			return $app['twig']->render("admin/album.edit.twig", array(
 					"album" => $albums,
+					"images" => $images,
 					"response" => $response['response'],
 					"error" => $response['error'],
 			));

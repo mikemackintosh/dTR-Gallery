@@ -1,6 +1,15 @@
 {% extends 'container.twig' %}
 {% block body %}
 
+<style>
+.modal {
+    overflow-y:auto;
+    max-height:90%;
+    max-height: 500px;
+    min-height: 500px; 
+}
+</style>
+
 <div class="hero-unit">
     <h1 class="album_name">{{ album.name }}</h1>
     <p>Managing the album <span class="album_name">{{ album.name }}</span></p>
@@ -18,11 +27,10 @@
 
 <form method="post" action="{{ app.url_generator.generate('admin.album.update') }}" enctype="multipart/form-data">
 <div class="row">
-	{{ response }}
 		{% if response == 'success' %}
 		<div class="alert alert-success">
   			<a href="#" class="close" data-dismiss="alert" >&times;</a>
-  			<strong>Good Job!</strong> You have update the album
+  			<strong>Good Job!</strong> You have updated the album
 		</div>
 		{% elseif response == 'fail' %}
 		<div class="alert alert-error">
@@ -123,14 +131,21 @@
       <h3>Select a feature image</h3>
     </div>
     <div class="modal-body featured-image-list">
- 		{% if album.images %}
- 			{% for img in album.images %}
- 				
+    	<p>
+ 		{% if images %}
+			<ul class="thumbnails">
+  	 		{% for img in images %}
+	        <li class="span2">
+    			<div class="thumbnail">
+    				<img src="/{{ album.image_path }}{{ img }}" alt="">
+    			</div>
+    		</li>
  			{% endfor %}
- 			<img src="">
+ 			</ul>
  		{% else %}
- 			<p>No images to display</p>
+ 			No images to display
  		{% endif %}
+ 		</p>
     </div>
     <div class="modal-footer">
 	  <button type="button" class="btn btn-success">Save</button>
@@ -238,7 +253,7 @@ $(document).ready(function(e){
 	        	}
 	        	
 	        	$.each(res.imgs, function(k, v){
-	        	    $('.featured-image-list').append('<img src="/_thumbs/'+ res.album+'64/'+v+'" class="center thumbnail" />').css('cursor', 'pointer');
+	        	    $('.featured-image-list').append('<img src="/_thumbs/'+ res.album+'256/'+v+'" class="center thumbnail" />').css('cursor', 'pointer');
 	        	});
 	        		
 				$('.featured-image-list img').on('click', function(e){
@@ -263,6 +278,18 @@ $(document).ready(function(e){
 	        contentType: false,
 	        processData: false
 	    });
+	});
+	
+	$('.featured-image-list img').on('click', function(e){
+					
+		var $img = $(this).attr('src');
+					
+		$("#featured").attr('src', $img);
+					
+		$('input.feature-image').val($img);
+		console.log($('input.feature-image').val());
+		$('#featureImage').modal('hide');
+					
 	});
 
 });
